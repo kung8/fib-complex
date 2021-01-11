@@ -4,10 +4,10 @@ services:
   - docker
 
 before_install: 
-  - docker build -t kung8/client-test -f ./client/Dockerfile.dev ./client
+  - docker build -t kung8/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run kung8/client-test npm test -- --coverage
+  - docker run -e CI=true kung8/react-test npm test
 
 after_success:
   - docker build -t kung8/multi-client ./client
