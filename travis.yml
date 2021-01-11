@@ -1,0 +1,24 @@
+sudo: required
+services: 
+  - docker
+
+before_install: 
+  - docker build -t kung8/client-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true kung8/client-test npm test
+
+after_success:
+  - docker build -t kung8/multi-client ./client
+  - docker build -t kung8/multi-nginx ./nginx
+  - docker build -t kung8/multi-server ./server
+  - docker build -t kung8/multi-worker ./worker
+
+  #login to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  
+  #push off to docker hub
+  - docker push kung8/multi-client
+  - docker push kung8/multi-nginx
+  - docker push kung8/multi-server
+  - docker push kung8/multi-worker
